@@ -48,6 +48,10 @@
       margin-top: 1rem;
       font-size: 1.5rem;
     }
+    .counter {
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -58,6 +62,8 @@
       <label><input type="radio" name="direction" value="de-en" checked> Deutsch → Englisch</label><br />
       <label><input type="radio" name="direction" value="en-de"> Englisch → Deutsch</label>
     </div>
+
+    <div class="counter" id="counter"></div>
 
     <div id="word" style="font-size: 1.5rem; margin: 1rem 0;"></div>
 
@@ -89,19 +95,32 @@
       { de: "Esel", en: "donkey" }
     ];
 
-    let currentWord;
+    let remainingWords = [...vocab];
+    let currentWord = null;
+    let score = 0;
 
     function getDirection() {
       return document.querySelector('input[name="direction"]:checked').value;
     }
 
     function pickWord() {
+      if (remainingWords.length === 0) {
+        document.getElementById("word").innerText = "🎉 Ende! Alle 20 Vokabeln wurden gezeigt.";
+        document.getElementById("solution").innerText = "Gesamt: " + score + " von 20 richtig.";
+        document.getElementById("solutionBtn").style.display = "none";
+        return;
+      }
+
       const direction = getDirection();
-      currentWord = vocab[Math.floor(Math.random() * vocab.length)];
+      const index = Math.floor(Math.random() * remainingWords.length);
+      currentWord = remainingWords.splice(index, 1)[0];
+
       document.getElementById("solution").innerText = "";
       document.getElementById("word").innerText =
         direction === "de-en" ? currentWord.de : currentWord.en;
+
       document.getElementById("solutionBtn").disabled = false;
+      updateCounter();
     }
 
     function showSolution() {
@@ -110,12 +129,25 @@
       const solutionText =
         direction === "de-en" ? currentWord.en : currentWord.de;
       document.getElementById("solution").innerText = `Lösung: ${solutionText}`;
+      score++;
       document.getElementById("solutionBtn").disabled = true;
       setTimeout(pickWord, 10000);
     }
 
+    function updateCounter() {
+      const total = vocab.length;
+      const done = total - remainingWords.length;
+      document.getElementById("counter").innerText = `Aufgabe ${done + 1} von ${total}`;
+    }
+
     document.querySelectorAll('input[name="direction"]').forEach(radio => {
-      radio.addEventListener('change', pickWord);
+      radio.addEventListener('change', () => {
+        // Zurücksetzen auf Anfang bei Richtungswechsel
+        remainingWords = [...vocab];
+        score = 0;
+        document.getElementById("solutionBtn").style.display = "inline-block";
+        pickWord();
+      });
     });
 
     window.onload = pickWord;
