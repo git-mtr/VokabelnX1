@@ -111,7 +111,7 @@
         direction === "de-en" ? currentWord.en : currentWord.de;
       document.getElementById("solution").innerText = `Lösung: ${solutionText}`;
       document.getElementById("solutionBtn").disabled = true;
-      setTimeout(pickWord, 2000);
+      setTimeout(pickWord, 10000);
     }
 
     document.querySelectorAll('input[name="direction"]').forEach(radio => {
