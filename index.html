@@ -46,9 +46,9 @@
     }
     .solution {
       margin-top: 1rem;
-      font-size: 1.5rem;
+      font-size: 1.7rem;
     }
-    .counter {
+    .counter, .score {
       margin-bottom: 1rem;
       font-weight: bold;
     }
@@ -64,6 +64,7 @@
     </div>
 
     <div class="counter" id="counter"></div>
+    <div class="score" id="score"></div>
 
     <div id="word" style="font-size: 1.5rem; margin: 1rem 0;"></div>
 
@@ -73,26 +74,13 @@
 
   <script>
     const vocab = [
-      { de: "Hund", en: "dog" },
-      { de: "Katze", en: "cat" },
-      { de: "Kuh", en: "cow" },
-      { de: "Pferd", en: "horse" },
-      { de: "Schaf", en: "sheep" },
-      { de: "Schwein", en: "pig" },
-      { de: "Huhn", en: "chicken" },
-      { de: "Ente", en: "duck" },
-      { de: "Gans", en: "goose" },
-      { de: "Maus", en: "mouse" },
-      { de: "Vogel", en: "bird" },
-      { de: "Fisch", en: "fish" },
-      { de: "Löwe", en: "lion" },
-      { de: "Tiger", en: "tiger" },
-      { de: "Elefant", en: "elephant" },
-      { de: "Affe", en: "monkey" },
-      { de: "Bär", en: "bear" },
-      { de: "Fuchs", en: "fox" },
-      { de: "Wolf", en: "wolf" },
-      { de: "Esel", en: "donkey" }
+      { de: "Hund", en: "dog" }, { de: "Katze", en: "cat" }, { de: "Kuh", en: "cow" },
+      { de: "Pferd", en: "horse" }, { de: "Schaf", en: "sheep" }, { de: "Schwein", en: "pig" },
+      { de: "Huhn", en: "chicken" }, { de: "Ente", en: "duck" }, { de: "Gans", en: "goose" },
+      { de: "Maus", en: "mouse" }, { de: "Vogel", en: "bird" }, { de: "Fisch", en: "fish" },
+      { de: "Löwe", en: "lion" }, { de: "Tiger", en: "tiger" }, { de: "Elefant", en: "elephant" },
+      { de: "Affe", en: "monkey" }, { de: "Bär", en: "bear" }, { de: "Fuchs", en: "fox" },
+      { de: "Wolf", en: "wolf" }, { de: "Esel", en: "donkey" }
     ];
 
     let remainingWords = [...vocab];
@@ -103,10 +91,20 @@
       return document.querySelector('input[name="direction"]:checked').value;
     }
 
+    function updateCounter() {
+      const total = vocab.length;
+      const done = total - remainingWords.length;
+      document.getElementById("counter").innerText = `Aufgabe ${done + 1} von ${total}`;
+    }
+
+    function updateScore() {
+      document.getElementById("score").innerText = `Gelöst: ${score}`;
+    }
+
     function pickWord() {
       if (remainingWords.length === 0) {
         document.getElementById("word").innerText = "🎉 Ende! Alle 20 Vokabeln wurden gezeigt.";
-        document.getElementById("solution").innerText = "Gesamt: " + score + " von 20 richtig.";
+        document.getElementById("solution").innerText = `Gesamt gelöst: ${score} von 20.`;
         document.getElementById("solutionBtn").style.display = "none";
         return;
       }
@@ -121,28 +119,22 @@
 
       document.getElementById("solutionBtn").disabled = false;
       updateCounter();
+      updateScore();
     }
 
     function showSolution() {
       if (!currentWord) return;
       const direction = getDirection();
-      const solutionText =
-        direction === "de-en" ? currentWord.en : currentWord.de;
+      const solutionText = direction === "de-en" ? currentWord.en : currentWord.de;
       document.getElementById("solution").innerText = `Lösung: ${solutionText}`;
       score++;
       document.getElementById("solutionBtn").disabled = true;
-      setTimeout(pickWord, 10000);
-    }
-
-    function updateCounter() {
-      const total = vocab.length;
-      const done = total - remainingWords.length;
-      document.getElementById("counter").innerText = `Aufgabe ${done + 1} von ${total}`;
+      updateScore();
+      setTimeout(pickWord, 5000);
     }
 
     document.querySelectorAll('input[name="direction"]').forEach(radio => {
       radio.addEventListener('change', () => {
-        // Zurücksetzen auf Anfang bei Richtungswechsel
         remainingWords = [...vocab];
         score = 0;
         document.getElementById("solutionBtn").style.display = "inline-block";
