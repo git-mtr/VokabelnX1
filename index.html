@@ -63,6 +63,8 @@
       <label><input type="radio" name="direction" value="en-de"> Englisch → Deutsch</label>
     </div>
 
+    <button onclick="startTrainer()">Start</button>
+
     <div class="counter" id="counter"></div>
     <div class="score" id="score"></div>
 
@@ -83,7 +85,7 @@
       { de: "Wolf", en: "wolf" }, { de: "Esel", en: "donkey" }
     ];
 
-    let remainingWords = [...vocab];
+    let remainingWords = [];
     let currentWord = null;
     let score = 0;
 
@@ -130,19 +132,23 @@
       score++;
       document.getElementById("solutionBtn").disabled = true;
       updateScore();
-      setTimeout(pickWord, 3000);
+      setTimeout(pickWord, 4000);
+    }
+
+    function startTrainer() {
+      remainingWords = [...vocab];
+      score = 0;
+      document.getElementById("solutionBtn").style.display = "inline-block";
+      document.getElementById("solution").innerText = "";
+      document.getElementById("word").innerText = "";
+      pickWord();
     }
 
     document.querySelectorAll('input[name="direction"]').forEach(radio => {
       radio.addEventListener('change', () => {
-        remainingWords = [...vocab];
-        score = 0;
-        document.getElementById("solutionBtn").style.display = "inline-block";
-        pickWord();
+        startTrainer();
       });
     });
-
-    window.onload = pickWord;
   </script>
 </body>
 </html>
